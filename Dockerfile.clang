@@ -1,0 +1,25 @@
+FROM ubuntu:18.04
+
+VOLUME /src
+WORKDIR /src
+
+RUN apt-get update \
+ && apt-get dist-upgrade -y \
+ && apt-get install -y \
+        clang-5.0 \
+        cmake \ 
+        libboost1.65-all-dev \
+        libgtest-dev \
+ && apt-get clean autoclean \
+ && apt-get autoremove -y
+
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-5.0 100 \
+ && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-5.0 100
+
+ENV CC /usr/bin/clang
+ENV CXX /usr/bin/clang++
+
+RUN cd /usr/src/gtest \
+ && cmake CMakeLists.txt \
+ && make \
+ && cp *.a /usr/lib
